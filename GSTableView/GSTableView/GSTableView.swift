@@ -92,4 +92,14 @@ extension GSTableView: UITableViewDelegate {
         guard let allDatasource = datasource?() else { return }
         allDatasource[indexPath.section].didSelectCell?(allDatasource[indexPath.section].dataSource?().1[indexPath.row])
     }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let allDatasource = datasource?() else { return nil }
+        return allDatasource[section].viewForHeaderInSection?().headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard let allDatasource = datasource?() else { return 0 }
+        return allDatasource[section].viewForHeaderInSection?().height ?? 0
+    }
 }
