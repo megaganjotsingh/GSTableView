@@ -15,7 +15,7 @@ class GSTableViewSectionDataSource<Section: Hashable, Model: Hashable> {
     var titleForSection: (() -> ())?
     var viewForHeaderInSection: (() -> (headerView: UIView, height: CGFloat))?
     
-    init(dataSource: (() -> (Section?, [Model]))?, dequeReusableCell: ((UITableView, Model) -> (UITableViewCell))?, didSelectCell: ((Model) -> ())?, titleForSection: (() -> ())? = nil) {
+    init(dataSource: (() -> (Section?, [Model]))?, dequeReusableCell: ((UITableView, Model) -> (UITableViewCell))?, didSelectCell: ((Model) -> ())?, titleForSection: (() -> ())? = nil, viewForHeaderInSection: (() -> (headerView: UIView, height: CGFloat))? = nil) {
         self.dataSource = dataSource
         self.dequeReusableCell = dequeReusableCell
         self.didSelectCell = didSelectCell
