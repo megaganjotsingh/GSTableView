@@ -23,13 +23,13 @@ Easy to Use
 
   ### You can pass the above datasource as below and according to array's elements cells are organised
   
-    ```swift
+  ```swift
         tableView.datasource = {
             return ['give your datasources here']
         }
         tableView.setDataSource()
         tableView.applyChanges()
-    ```
+  ```
   
   Collaboration
 ---
