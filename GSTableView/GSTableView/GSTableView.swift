@@ -30,6 +30,7 @@ class GSTableView: UIView {
         setUpView()
     }
 
+    /// cell registration method
     func registerCell(_ cell: UITableViewCell.Type) {
         let string = String(describing: cell.self)
         tableView.register(cell.self, forCellReuseIdentifier: string)
@@ -72,7 +73,6 @@ class GSTableView: UIView {
     
     func applyChanges() {
         configureSnapshot()
-//        tableDataSource?.apply(snapShot)
     }
     
     func configureSnapshot() {
