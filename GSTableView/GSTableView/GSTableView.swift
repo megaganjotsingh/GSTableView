@@ -8,23 +8,22 @@
 import Foundation
 import UIKit
 
-class GSTableView: UIView {
-    private var tableView: UITableView!
+class GSTableView: UITableView {
     private var snapShot = NSDiffableDataSourceSnapshot<AnyHashable, AnyHashable>()
     private var tableDataSource: UITableViewDiffableDataSource<AnyHashable, AnyHashable>?
     
-    var datasource: (() -> ([GSTableViewSectionDataSource<AnyHashable, AnyHashable>]))?
+    var datasources: (() -> ([GSTableViewSectionDataSource<AnyHashable, AnyHashable>]))?
     
     convenience init() {
         self.init(frame: .zero)
         setUpView()
     }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    
+    override init(frame: CGRect, style: UITableView.Style) {
+        super.init(frame: frame, style: style)
         setUpView()
     }
-
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpView()
@@ -33,41 +32,29 @@ class GSTableView: UIView {
     /// cell registration method
     func registerCell(_ cell: UITableViewCell.Type) {
         let string = String(describing: cell.self)
-        tableView.register(cell.self, forCellReuseIdentifier: string)
-        tableView.separatorStyle = .none
+        register(cell.self, forCellReuseIdentifier: string)
+        separatorStyle = .none
     }
 
     func setUpView() {
-        tableView = UITableView()
-        tableView.showsVerticalScrollIndicator = false
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(tableView)
-        align()
+        showsVerticalScrollIndicator = false
+        translatesAutoresizingMaskIntoConstraints = false
+        translatesAutoresizingMaskIntoConstraints = false
     }
 
-    func align() {
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            tableView.rightAnchor.constraint(equalTo: rightAnchor),
-            tableView.leftAnchor.constraint(equalTo: leftAnchor)
-        ])
-    }
-    
     func createDataSource() -> UITableViewDiffableDataSource<AnyHashable, AnyHashable>? {
-        guard let allDatasource = datasource?() else { return nil }
-        tableDataSource = UITableViewDiffableDataSource<AnyHashable, AnyHashable>(tableView: tableView, cellProvider: { [weak self] tableV, indexPath, model in
-            guard let self = self else { return nil }
-            return allDatasource[indexPath.section].dequeReusableCell?(self.tableView, model) ?? UITableViewCell()
+        guard let allDatasource = datasources?() else { return nil }
+        tableDataSource = UITableViewDiffableDataSource<AnyHashable, AnyHashable>(tableView: self, cellProvider: { [weak self] tableV, indexPath, model in
+            guard let self = self else { return UITableViewCell() }
+            return allDatasource[indexPath.section].dequeReusableCell?(self, model) ?? UITableViewCell()
             
         })
         return tableDataSource
     }
     
     func setDataSource() {
-        tableView.dataSource = createDataSource()
-        tableView.delegate = self
+        dataSource = createDataSource()
+        delegate = self
         applyChanges()
     }
     
@@ -77,7 +64,7 @@ class GSTableView: UIView {
     
     func configureSnapshot() {
         var snapShotsss = NSDiffableDataSourceSnapshot<AnyHashable, AnyHashable>()
-        guard let allDatasource = datasource?() else { return }
+        guard let allDatasource = datasources?() else { return }
         allDatasource.forEach({ sectionDataSource in
             let dataSource = sectionDataSource.dataSource
             snapShotsss.appendSections([dataSource?().0])
@@ -89,17 +76,17 @@ class GSTableView: UIView {
 
 extension GSTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let allDatasource = datasource?() else { return }
+        guard let allDatasource = datasources?() else { return }
         allDatasource[indexPath.section].didSelectCell?(allDatasource[indexPath.section].dataSource?().1[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let allDatasource = datasource?() else { return nil }
+        guard let allDatasource = datasources?() else { return nil }
         return allDatasource[section].viewForHeaderInSection?().headerView
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard let allDatasource = datasource?() else { return 0 }
+        guard let allDatasource = datasources?() else { return 0 }
         return allDatasource[section].viewForHeaderInSection?().height ?? 0
     }
 }
