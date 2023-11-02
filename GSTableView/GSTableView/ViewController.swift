@@ -49,6 +49,17 @@ class ViewController: UIViewController {
     }
     
     func setUpDataSource() {
+        let cellDescriptor: ((UITableView, AnyHashable) -> (UITableViewCell)) = { table, caar in
+                var cell = table.dequeueReusableCell(withIdentifier: "CarCell")
+                if cell == nil {
+                    cell = UITableViewCell(style: .default, reuseIdentifier: "CarCell")
+                }
+                cell?.textLabel?.text = (caar as? Car)?.name
+                cell?.textLabel?.font = UIFont.systemFont(ofSize: 40)
+                print(caar.base)
+                return cell ?? UITableViewCell()
+            }
+            
         let carSectionDataSource = GSTableViewSectionDataSource<AnyHashable, AnyHashable>(
             dataSource: {
                 return (
@@ -60,16 +71,7 @@ class ViewController: UIViewController {
                     ]
                 )
             },
-            dequeReusableCell: { table, caar in
-                var cell = table.dequeueReusableCell(withIdentifier: "CarCell")
-                if cell == nil {
-                    cell = UITableViewCell(style: .default, reuseIdentifier: "CarCell")
-                }
-                cell?.textLabel?.text = (caar as? Car)?.name
-                cell?.textLabel?.font = UIFont.systemFont(ofSize: 40)
-                print(caar.base)
-                return cell ?? UITableViewCell()
-            }, didSelectCell: { model in
+            dequeReusableCell: cellDescriptor, didSelectCell: { model in
                 print(model)
             }
         )
